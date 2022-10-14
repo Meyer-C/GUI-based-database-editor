@@ -9,7 +9,7 @@ def search_pubchem():
     return results
 
 def search_pubchem_input(search_term, search_type):
-    if search_type != 'cid':
+    if search_type != 'CID':
         return pc.get_compounds(search_term, search_type)
     else:
         return pc.Compound.from_cid(search_term)
