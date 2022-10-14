@@ -15,6 +15,7 @@ class windowCount:
     pubchem_popup = 0
     invalid_filepath_popup_count = 0
     output_tab_count = 0
+    hmdb_add_count = 0
 
 class namingCount:
     count = 1
@@ -296,6 +297,21 @@ def add_with_pubchem(sender, app_data, user_data):
     dpg.add_text('Chemical has been added to the database!', parent=tab_tag)
     dpg.add_button(label='close', parent=tab_tag, callback=close, user_data=tab_tag)
 
+class hmdbAdd:
+    def hmdb_window(self):
+        if get_filepath() == 'Invalid Filepath':
+            invalid_filepath_popup()
+        else:
+            windowCount.hmdb_add_count += 1
+            tab_tag = str(f'HMDB Add {windowCount.hmdb_add_count}')
+            with dpg.tab(label='HMDB Add', tag=tab_tag, parent='tabs'):
+                dpg.add_text('Search the Human Metabolomics Data Base!\nSearch only with the HMDB ID:', parent=tab_tag)
+                search_tag = str(f'Search {tab_tag}')
+                dpg.add_input_text(tag=search_tag, parent=tab_tag)
+                dpg.add_button(label='Search!', parent=tab_tag) # add a callback once you determine the best way to
+                                                                # retrieve data from the .xml file
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 # Miscellaneous Features
 
@@ -318,14 +334,12 @@ def invalid_filepath_popup():
 
 with dpg.window(label='PMF Chemical Database', width=600, height=300, tag='Primary Window'):
     with dpg.menu_bar():
-        with dpg.menu(label='File'):
-            dpg.add_menu_item(tag='filepath', label='Add Filepath to Database')
-            dpg.add_menu_item(tag='save', label='Save')
         dpg.add_menu_item(tag='search', label='Search Database', callback=searchWindow.search_window)
         with dpg.menu(label='Edit Database'):
             with dpg.menu(label='Add to Database'):
                 dpg.add_menu_item(label='Add Manually', callback=manualTabAdd.manual_window)
                 dpg.add_menu_item(label='Add from PubChem', callback=pubChemAdd.pubchem_window)
+                dpg.add_menu_item(label='Add from HMDB', callback=hmdbAdd.hmdb_window)
         with dpg.tab_bar(tag='tabs', parent='Primary Window'):
             with dpg.tab(label='Home', tag='Home'):
                 dpg.add_text('Welcome to the Database!', parent='Home')
