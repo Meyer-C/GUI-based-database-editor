@@ -3,6 +3,7 @@ from GUI_compatible_searches import *
 from Compound_From_XLS import get_compounds as gc
 from openpyxl import load_workbook
 from PubChem_Search import search_pubchem_input as spc
+from hmdb_xml_data_extactor import *
 
 dpg.create_context()
 dpg.create_viewport(title='PMF Chemical Database', width=800, height=600)
@@ -15,6 +16,8 @@ class windowCount:
     pubchem_popup = 0
     invalid_filepath_popup_count = 0
     output_tab_count = 0
+    hmdb_search_count = 0
+    hmdb_popup_count = 0
 
 class namingCount:
     count = 1
@@ -24,15 +27,6 @@ class NewChemical:
 
 def get_filepath():
     return dpg.get_value('file')
-#    with open('filepath.txt') as a:
-#        content = a.readlines()
-#        return content[0]
-
-# set up filepath page for this
-#def change_filepath(new_path):
-#    with open('filepath.txt', 'r+') as a:
-#        a.truncate(0)
-#        a.write(new_path)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -77,6 +71,8 @@ class searchWindow():
                 dpg.add_input_text(tag=search_term_call, label='Search Here', parent=tab_tag)
                 dpg.add_button(label='Advanced Search Options', callback=searchWindowPopup.search_window_popup)
                 dpg.add_button(label='Search!', callback=search_starter, parent=tab_tag)
+                dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 40, 50), parent=tab_tag, callback=close,
+                               user_data=tab_tag)
 
 class searchWindowPopup():
 
@@ -94,6 +90,7 @@ class searchWindowPopup():
                     name_tags.append(name_tag)
                     dpg.add_checkbox(label=name, tag=name_tag, parent=window_name)
             dpg.add_button(label='Advanced Search!', callback=advanced_search_starter, user_data=name_tags, parent=window_name)
+
 
 # --------------------------------------------------------------------------------------------------------------------
 # all classes and fxns of manual chemical addition
@@ -134,13 +131,16 @@ class manualTabAdd:
                     names = compounds[0]
                     name_tags = []
                     for x in range(1,len(names)):
-                        if names[x] is not None:
+                        if names[x] is not None and names[x] != 'STANDARD PROPERTIES <<--' and names[x] != \
+                                'PARENT COMPOUNT PROPERTIES -->>':
                             name_tag = f'{windowCount.manual_count}-{x}. {names[x]}'
                             name_tags.append(name_tag)
                             dpg.add_text(name_tag, parent=tab_tag)
                             dpg.add_input_text(tag=name_tag, parent=tab_tag)
                     dpg.add_button(label='Add Chemical!', tag=f'{windowCount.manual_count}_add_chemical',
                                    callback=add_to_database, user_data=name_tags, parent=tab_tag)
+            dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 50, 50), parent=tab_tag, callback=close,
+                           user_data=tab_tag)
 
 def add_to_database(sender, app_data, user_data):
     wb = load_workbook(get_filepath())
@@ -174,6 +174,8 @@ class pubChemAdd:
                 dpg.add_input_text(tag=this_search, parent=tab_tag)
                 dpg.add_button(tag=str(f'{this_search}_button'),label='Search!', callback=search_pubchem,
                                user_data=[search_type_call, this_search])
+            dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 40, 50), parent=tab_tag, callback=close,
+                           user_data=tab_tag)
 
 # ASK WHAT KIND OF DATA SHOULD BE RETURNED FROM PUBCHEM?
 def search_pubchem(sender, app_data, user_data):
@@ -217,7 +219,8 @@ def pubchem_popup_add_info(sender, app_data, user_data):
     name_tags = []
     label_tags = []
     for x in range(1, 13):
-        if names[x] is not None:
+        if names[x] is not None and names[x] != 'STANDARD PROPERTIES <<--' and names[x] != \
+                'PARENT COMPOUNT PROPERTIES -->>':
             name_tag = str(f'{windowCount.pubchem_popup}. {names[x]}')
             labels = str(f'{x}. {names[x]}')
             label_tag = str(f'{windowCount}_{labels}')
@@ -296,6 +299,166 @@ def add_with_pubchem(sender, app_data, user_data):
     dpg.add_text('Chemical has been added to the database!', parent=tab_tag)
     dpg.add_button(label='close', parent=tab_tag, callback=close, user_data=tab_tag)
 
+class hmdbAdd:
+    def hmdb_window(self):
+        if get_filepath() == 'Invalid Filepath':
+            invalid_filepath_popup()
+        else:
+            windowCount.hmdb_search_count += 1
+            tab_tag = str(f'HMDB Add {windowCount.hmdb_search_count}')
+            with dpg.tab(label='HMDB Add', tag=tab_tag, parent='tabs'):
+                dpg.add_text('Search the Human Metabolomics Data Base!\nSearch only with the HMDB ID:', parent=tab_tag)
+                search_tag = str(f'Search {tab_tag}')
+                dpg.add_input_text(tag=search_tag, parent=tab_tag)
+                dpg.add_button(label='Search!', parent=tab_tag, callback=hmdb_search, user_data=search_tag)
+                dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 40, 50), parent=tab_tag, callback=close, user_data=tab_tag)
+
+def hmdb_search(sender, app_data, user_data):
+    compounds = find_xml(dpg.get_value(user_data)) # list of lists
+    compound_tags = [] # list of compound tag names, strings
+    windowCount.hmdb_popup_count += 1
+    tab_tag = str(f'{windowCount.hmdb_popup_count}. HMDB Search Results: {user_data}')
+    with dpg.window(tag=tab_tag, label=tab_tag, width=600, height=300):
+        for compound in compounds:
+            if compound != 'Invalid Accession':
+                top_text_add_compound = str(f'top text add compound {windowCount.hmdb_popup_count}')
+                dpg.add_text('Select the compound you want to add!', parent=tab_tag, tag=top_text_add_compound)
+                compound_str = (f'{"Name":40}{compound.name}\n{"Formula":40}{compound.formula}\n{"InChiKey":40}{compound.inchikey}')
+                compound_tag = str(f'{windowCount.pubchem_popup} {compound_str}')
+                compound_tags.append(compound_tag)
+                dpg.add_checkbox(tag=compound_tag, label=compound_str, parent=tab_tag)
+                dpg.add_button(label='Add to Database, Continue to Next Step', parent=tab_tag,
+                               callback=hmdb_popup_add_info, user_data=[compounds, tab_tag, compound_tags,
+                                                                        top_text_add_compound])
+            else:
+                dpg.add_text('Invalid Accession. Try to search again')
+                dpg.add_button(label='Close', callback=close, user_data=tab_tag)
+
+def hmdb_popup_add_info(sender, app_data, user_data):
+    compounds = user_data[0]
+    tab_tag = user_data[1]
+    compound_tags = user_data[2]
+    compound_to_use = []
+    dpg.delete_item(user_data[3])
+    dpg.delete_item(sender)
+
+    for x in range(len(compound_tags)):
+        if dpg.get_value(compound_tags[x]) == True:
+            compound_to_use.append(compounds[x])
+            dpg.delete_item(compound_tags[x])
+        else:
+            dpg.delete_item(compound_tags[x])
+    chosen_compound = compound_to_use[0]
+
+    # TODO Ask about the type of SMILES the HMDB returns
+    this_compound_information = ['Name', 'MolecularFormula', 'MolecularWeight', 'MonoisotopicMass', 'IUPACName', 'CAS',
+                                 'CanonicalSMILES', 'IsomericSMILES', 'InChI', 'InChIKey']
+
+    xl_data = gc(get_filepath())
+    names = xl_data[0]
+    name_tags = []
+    label_tags = []
+    labels = []
+    for x in range(2, 47):
+        if names[x] is not None and names[x] != 'STANDARD PROPERTIES <<--' and names[x] != \
+                'PARENT COMPOUNT PROPERTIES -->>':
+            if names[x] not in this_compound_information:
+                name_tag = str(f'{windowCount.pubchem_popup}:{x}. {names[x]}')
+                label = str(f'{x}. {names[x]}')
+                labels.append(label)
+                label_tag = str(f'{windowCount}_{label}')
+                label_tags.append(label_tag)
+                dpg.add_text(label,tag=label_tag, parent=tab_tag)
+                dpg.add_input_text(tag=name_tag, parent=tab_tag)
+                name_tags.append(name_tag)
+    button_tag = str(f'{windowCount.pubchem_popup}_add_pubchem_chemical')
+    dpg.add_button(label='Add Chemical to Database!', tag=button_tag,
+                   parent=tab_tag, callback=add_with_hmdb,
+                   user_data=[chosen_compound, name_tags, label_tags, button_tag, tab_tag, labels])
+
+
+
+
+def add_with_hmdb(sender, app_data, user_data):
+    chosen_compound = user_data[0]
+    name_tags = user_data[1]
+    label_tags = user_data[2]
+    button_tag = user_data[3]
+    tab_tag = user_data[4]
+    labels = user_data[5]
+
+    wb = load_workbook(get_filepath())
+    sheet = wb.active
+    max_row = sheet.max_row
+    max_col = sheet.max_column
+    new_row = max_row + 1
+
+    names = []
+    for x in range(1, max_col):
+        names.append(sheet.cell(1, x).value)
+
+    # creating a new accession
+    prev_accession = sheet.cell(max_row, 1).value
+    zeros = 6 - len(str(int(prev_accession[5::]) + 1))
+    sheet.cell(new_row, 1).value = str(prev_accession[0:5]) + str('0' * zeros) + str(int(prev_accession[5::]) + 1)
+
+    sheet.cell(new_row, 2).value = chosen_compound.name
+    sheet.cell(new_row, 13).value = chosen_compound.cas
+    sheet.cell(new_row, 15).value = chosen_compound.formula
+    sheet.cell(new_row, 16).value = float(chosen_compound.avg_mol_weight)
+    sheet.cell(new_row, 21).value = chosen_compound.formula
+    sheet.cell(new_row, 22).value = float(chosen_compound.avg_mol_weight)
+    # TODO ask about what type of SMILES comes from HMDB
+    sheet.cell(new_row, 23).value = chosen_compound.smiles
+    sheet.cell(new_row, 24).value = chosen_compound.smiles
+    sheet.cell(new_row, 25).value = chosen_compound.inchi
+    sheet.cell(new_row, 26).value = chosen_compound.inchikey
+    sheet.cell(new_row, 27).value = chosen_compound.iupac_name
+    sheet.cell(new_row, 29).value = float(chosen_compound.monoisotopic_mass)
+
+    # 0 is for strings, 1 is for ints, 2, is for floats
+    name_types = {'Single/Mixture': 0, 'Solid/Liquid/Solution': 0, 'Location': 0, 'in stock': 0, 'Cat_number': 0,
+                  'Date': 0, 'vendor suggested storage': 0, 'Expiration': 0, 'cid': 1, 'TPSA': 1, 'Complexity': 1,
+                  'Charge' : 1, 'HBondDonorCount': 1, 'HBondAcceptorCount': 1, 'RotatableBondCount': 1,
+                  'HeavyAtomCount': 1, 'IsotopeAtomCount': 1, 'AtomStereoCount': 1, 'DefinedAtomStereoCount': 1,
+                  'UndefinedAtomStereoCount': 1, 'BondStereoCount': 1, 'DefinedBondStereoCount': 1,
+                  'UndefinedBondStereoCount': 1, 'CovalentUnitCount':1, 'ConformerCount3D': 1, 'Fingerprint2D': 0,
+                  'XLogP': 2}
+
+    for x in range(1, max_col):
+        name = names[x - 1]
+        if name is not None:
+            for y in range(len(labels)):
+                label = labels[y].split('.')
+                cut_label = label[1].replace(' ', '')
+                if cut_label.lower() in name.lower():
+                    if sheet.cell(new_row, x).value is None:
+                        this_type = name_types.get(name)
+                        if this_type == 0:
+                            sheet.cell(new_row, x).value = dpg.get_value(name_tags[y])
+                        elif this_type == 1:
+                            try:
+                                sheet.cell(new_row, x).value = int(dpg.get_value(name_tags[y]))
+                            except:
+                                sheet.cell(new_row, x).value = dpg.get_value(name_tags[y])
+                        elif this_type == 2:
+                            try:
+                                sheet.cell(new_row, x).value = float(dpg.get_value(name_tags[y]))
+                            except:
+                                sheet.cell(new_row, x).value = dpg.get_value(name_tags[y])
+
+    for name_tag in name_tags:
+        dpg.delete_item(name_tag)
+    for label_tag in label_tags:
+        dpg.delete_item(label_tag)
+    dpg.delete_item(button_tag)
+
+    dpg.add_text('Chemical has been added to the database!', parent=tab_tag)
+    dpg.add_button(label='Close', parent=tab_tag, callback=close, user_data=tab_tag)
+
+    wb.save(get_filepath())
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 # Miscellaneous Features
 
@@ -318,20 +481,17 @@ def invalid_filepath_popup():
 
 with dpg.window(label='PMF Chemical Database', width=600, height=300, tag='Primary Window'):
     with dpg.menu_bar():
-        with dpg.menu(label='File'):
-            dpg.add_menu_item(tag='filepath', label='Add Filepath to Database')
-            dpg.add_menu_item(tag='save', label='Save')
         dpg.add_menu_item(tag='search', label='Search Database', callback=searchWindow.search_window)
         with dpg.menu(label='Edit Database'):
             with dpg.menu(label='Add to Database'):
                 dpg.add_menu_item(label='Add Manually', callback=manualTabAdd.manual_window)
                 dpg.add_menu_item(label='Add from PubChem', callback=pubChemAdd.pubchem_window)
+                dpg.add_menu_item(label='Add from HMDB', callback=hmdbAdd.hmdb_window)
         with dpg.tab_bar(tag='tabs', parent='Primary Window'):
             with dpg.tab(label='Home', tag='Home'):
                 dpg.add_text('Welcome to the Database!', parent='Home')
                 dpg.add_text('Enter Filepath to the Database Bellow', parent='Home')
                 dpg.add_input_text(tag='file', parent='Home')
-
 
 
 
