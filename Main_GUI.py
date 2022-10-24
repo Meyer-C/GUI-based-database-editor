@@ -138,11 +138,12 @@ class manualTabAdd:
                             dpg.add_text(name_tag, parent=tab_tag)
                             dpg.add_input_text(tag=name_tag, parent=tab_tag)
                     dpg.add_button(label='Add Chemical!', tag=f'{windowCount.manual_count}_add_chemical',
-                                   callback=add_to_database, user_data=name_tags, parent=tab_tag)
-            dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 50, 50), parent=tab_tag, callback=close,
-                           user_data=tab_tag)
+                                   callback=add_to_database, user_data=[name_tags, tab_tag], parent=tab_tag)
+            dpg.add_button(tag=str(f'close_{tab_tag}'), label='X', pos=(dpg.get_viewport_width() - 50, 50),
+                           parent=tab_tag, callback=close, user_data=tab_tag)
 
 def add_to_database(sender, app_data, user_data):
+    name_tags = user_data[0]
     wb = load_workbook(get_filepath())
     sheet = wb.active
     max_row = sheet.max_row
@@ -150,9 +151,11 @@ def add_to_database(sender, app_data, user_data):
     zeros = 6 - len(str(int(prev_accession[5::]) + 1))
     sheet.cell(max_row + 1, 1).value = str(prev_accession[0:5]) + str('0' * zeros) + str(int(prev_accession[5::]) + 1)
 
-    for x in range(len(user_data)):
-        sheet.cell(max_row + 1, x + 2).value = dpg.get_value(user_data[x])
+    for x in range(len(name_tags)):
+        sheet.cell(max_row + 1, x + 2).value = dpg.get_value(name_tags[x])
     wb.save(get_filepath())
+
+    close_add_to_database(user_data[1])
 
 # ---------------------------------------------------------------------------------------------------------------------
 # All classes and fxns of PubChem addition
@@ -290,14 +293,7 @@ def add_with_pubchem(sender, app_data, user_data):
 
     wb.save(get_filepath())
 
-    for name_tag in name_tags:
-        dpg.delete_item(name_tag)
-    for label_tag in label_tags:
-        dpg.delete_item(label_tag)
-    dpg.delete_item(button_tag)
-
-    dpg.add_text('Chemical has been added to the database!', parent=tab_tag)
-    dpg.add_button(label='close', parent=tab_tag, callback=close, user_data=tab_tag)
+    close_add_to_database(tab_tag)
 
 class hmdbAdd:
     def hmdb_window(self):
@@ -447,16 +443,10 @@ def add_with_hmdb(sender, app_data, user_data):
                             except:
                                 sheet.cell(new_row, x).value = dpg.get_value(name_tags[y])
 
-    for name_tag in name_tags:
-        dpg.delete_item(name_tag)
-    for label_tag in label_tags:
-        dpg.delete_item(label_tag)
-    dpg.delete_item(button_tag)
-
-    dpg.add_text('Chemical has been added to the database!', parent=tab_tag)
-    dpg.add_button(label='Close', parent=tab_tag, callback=close, user_data=tab_tag)
-
     wb.save(get_filepath())
+
+    close_add_to_database(tab_tag)
+
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -472,6 +462,11 @@ def invalid_filepath_popup():
         dpg.add_text('Invalid Filepath or No Filepath\nEnter a new filepath on the Home page')
         dpg.add_button(label='Close', tag='Button Invalid Filepath or No Filepath {windowCount.invalid_filepath_popup_count}',
                        callback=close, user_data=f'Invalid Filepath or No Filepath {windowCount.invalid_filepath_popup_count}')
+
+def close_add_to_database(tab_tag):
+    dpg.delete_item(tab_tag, children_only=True)
+    dpg.add_text('Chemical has been added to the database!', parent=tab_tag)
+    dpg.add_button(label='Close', parent=tab_tag, callback=close, user_data=tab_tag)
 
 
 
