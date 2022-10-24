@@ -1,6 +1,6 @@
 from Compound_From_XLS import get_compounds as gc
 
-def GUI_quick_search(search_type, search_term, filepath, advanced_search_terms):
+def GUI_quick_search(search_type, search_term, filepath, advanced_search_terms, return_type):
     compound_list = gc(filepath)
 
     potential_compounds = []
@@ -51,34 +51,44 @@ def GUI_quick_search(search_type, search_term, filepath, advanced_search_terms):
                     potential_compounds.append([compound_list[0], compound])
 
     if advanced_search_terms is None:
-        return search_return(potential_compounds)
-
+        if return_type == 'str':
+            return search_return(potential_compounds)
+        else:
+            return potential_compounds
     else:
-        return advanced_search_return(potential_compounds, advanced_search_terms)
+        if return_type == 'str':
+            return advanced_search_return(potential_compounds, advanced_search_terms)
+        else:
+            return potential_compounds
+
+
 
 
 def search_return(potential_compounds):
-    output_str = ''
-
-    if len(potential_compounds) >= 1:
-        for compound in potential_compounds:
-            naming = compound[0]
-            compound_info = compound[1]
-            for x in range(len(naming)):
-                if naming[x] is not None:
-                    output_str += f'{str(naming[x]):40} {str(compound_info[x])}\n'
-            output_str += '\n-------------------------------------------------------------------\n\n'
+    output = []
+    for compound in potential_compounds:
+        this_compound_str = ''
+        naming = compound[0]
+        compound_info = compound[1]
+        for x in range(len(naming)):
+            if naming[x] is not None:
+                this_compound_str += f'{str(naming[x]):40} {str(compound_info[x])}\n'
+        this_compound_str += '\n-------------------------------------------------------------------\n\n'
+        output.append(this_compound_str)
 
     else:
-        output_str = 'No Compounds Found'
+        output.append(0)
 
-    return output_str
+    return output
+
+
 
 def advanced_search_return(potential_compounds, advanced_search_terms):
-    output_str = ''
+    output = []
 
     if len(potential_compounds) >= 1:
         for compound in potential_compounds:
+            this_compound_str = ''
             naming = compound[0]
             compound_info = compound[1]
             for x in range(len(naming)):
@@ -86,11 +96,12 @@ def advanced_search_return(potential_compounds, advanced_search_terms):
                     a = advanced_search_terms[y]
                     if x == a:
                         if naming[x] is not None:
-                            output_str += f'{str(naming[x]):40} {str(compound_info[x])}\n'
-            output_str += '\n-------------------------------------------------------------------\n\n'
+                            this_compound_str += f'{str(naming[x]):40} {str(compound_info[x])}\n'
+            this_compound_str += '\n-------------------------------------------------------------------\n\n'
+            output.append(this_compound_str)
 
     else:
-        output_str = 'No Compounds Found'
+        output.append(0)
 
-    return output_str
+    return output
 

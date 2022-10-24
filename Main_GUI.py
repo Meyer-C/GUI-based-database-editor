@@ -37,7 +37,14 @@ def search_starter():
     with dpg.tab(label='Outputs', parent='tabs', tag=output_tab_tag):
         search_type = dpg.get_value(f'type_{windowCount.search_count}')
         search_term = dpg.get_value(f'term_{windowCount.search_count}')
-        dpg.add_text(GUI_quick_search(search_type, search_term, get_filepath(), None), parent=output_tab_tag)
+        quick_search = GUI_quick_search(search_type, search_term, get_filepath(), None, 'str')
+        if quick_search[0] != 0:
+            for x in range(len(quick_search)):
+                compound = quick_search[x]
+                compound_tag = str(f'{search_term}_{x}')
+                dpg.add_checkbox(label=compound, tag=compound_tag, parent=output_tab_tag)
+        dpg.add_button(label='More Information', tag=str(f'{output_tab_tag}_more_button'))
+        dpg.add_button(label='Export Data to CSV(pending)', tag=str(f'{output_tab_tag}_export_button'))
         dpg.add_button(label='Close', parent=output_tab_tag, callback=close, user_data=output_tab_tag)
 
 def advanced_search_starter(sender, app_data, user_data):
@@ -50,7 +57,14 @@ def advanced_search_starter(sender, app_data, user_data):
     with dpg.tab(label='Outputs', tag=output_tab_tag, parent='tabs'):
         search_type = dpg.get_value(f'type_{windowCount.search_count}')
         search_term = dpg.get_value(f'term_{windowCount.search_count}')
-        dpg.add_text(GUI_quick_search(search_type, search_term, get_filepath(), advanced_return_nums), parent=output_tab_tag)
+        quick_search = GUI_quick_search(search_type, search_term, get_filepath(), advanced_return_nums, 'str')
+        if quick_search[0] != 0:
+            for x in range(len(quick_search)):
+                compound = quick_search[x]
+                compound_tag = str(f'{search_term}_{x}')
+                dpg.add_checkbox(label=compound, tag=compound_tag, parent=output_tab_tag)
+        dpg.add_button(label='More Information', tag=str(f'{output_tab_tag}_more_button'))
+        dpg.add_button(label='Export Data to CSV(pending)', tag=str(f'{output_tab_tag}_export_button'))
         dpg.add_button(label='Close', parent=output_tab_tag, callback=close, user_data=output_tab_tag)
         close(sender, app_data, str(f'Advanced Search {windowCount.search_popup_count}'))
 
@@ -89,7 +103,8 @@ class searchWindowPopup():
                     name_tag = str(f'{x}. {names[x]} {windowCount.search_popup_count}')
                     name_tags.append(name_tag)
                     dpg.add_checkbox(label=name, tag=name_tag, parent=window_name)
-            dpg.add_button(label='Advanced Search!', callback=advanced_search_starter, user_data=name_tags, parent=window_name)
+            dpg.add_button(label='Advanced Search!', callback=advanced_search_starter, user_data=name_tags,
+                           parent=window_name)
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -196,7 +211,8 @@ def pubchem_popup(compounds, search_term):
         compound_strings = []
         compound_tags = []
         for compound in compounds:
-            compound_strings.append(str(f'{"Name":20}{compound.iupac_name}\n{"Formula":20}{compound.molecular_formula}\n{"InChiKey":20}{compound.inchikey}'))
+            compound_strings.append(str(f'{"Name":20}{compound.iupac_name}\n{"Formula":20}{compound.molecular_formula}'
+                                        f'\n{"InChiKey":20}{compound.inchikey}'))
         for compound_string in compound_strings:
             compound_tag = str(f'{windowCount.pubchem_popup} {compound_string}')
             compound_tags.append(compound_tag)
@@ -307,7 +323,8 @@ class hmdbAdd:
                 search_tag = str(f'Search {tab_tag}')
                 dpg.add_input_text(tag=search_tag, parent=tab_tag)
                 dpg.add_button(label='Search!', parent=tab_tag, callback=hmdb_search, user_data=search_tag)
-                dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 40, 50), parent=tab_tag, callback=close, user_data=tab_tag)
+                dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 40, 50), parent=tab_tag, callback=close,
+                               user_data=tab_tag)
 
 def hmdb_search(sender, app_data, user_data):
     compounds = find_xml(dpg.get_value(user_data)) # list of lists
@@ -319,7 +336,8 @@ def hmdb_search(sender, app_data, user_data):
             if compound != 'Invalid Accession':
                 top_text_add_compound = str(f'top text add compound {windowCount.hmdb_popup_count}')
                 dpg.add_text('Select the compound you want to add!', parent=tab_tag, tag=top_text_add_compound)
-                compound_str = (f'{"Name":40}{compound.name}\n{"Formula":40}{compound.formula}\n{"InChiKey":40}{compound.inchikey}')
+                compound_str = (f'{"Name":40}{compound.name}\n{"Formula":40}{compound.formula}\n{"InChiKey":40}'
+                                f'{compound.inchikey}')
                 compound_tag = str(f'{windowCount.pubchem_popup} {compound_str}')
                 compound_tags.append(compound_tag)
                 dpg.add_checkbox(tag=compound_tag, label=compound_str, parent=tab_tag)
