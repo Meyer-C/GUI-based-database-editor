@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 import openpyxl
-# import xlsxwriter
+import xlsxwriter
 
 from GUI_compatible_searches import *
 from Compound_From_XLS import get_compounds as gc
@@ -51,7 +51,7 @@ def search_starter():
             more_info_tag = str(f'{output_tab_tag}_more_button')
             export_tag = str(f'{output_tab_tag}_export_button')
             dpg.add_button(label='More Information(pending)', tag=more_info_tag)
-            dpg.add_button(label='Export Data to .xlsx(pending)', tag=export_tag, callback=xlsx_out_tab,
+            dpg.add_button(label='Export Data to .xlsx', tag=export_tag, callback=xlsx_out_tab,
                            user_data=[compound_tags, quick_search_compounds])
             dpg.add_button(label='Close', parent=output_tab_tag, callback=close, user_data=output_tab_tag)
 
@@ -78,7 +78,7 @@ def advanced_search_starter(sender, app_data, user_data):
             more_info_tag = str(f'{output_tab_tag}_more_button')
             export_tag = str(f'{output_tab_tag}_export_button')
             dpg.add_button(label='More Information(pending)', tag=more_info_tag)
-            dpg.add_button(label='Export Data to .xlsx(pending)', tag=export_tag, callback=xlsx_out_tab,
+            dpg.add_button(label='Export Data to .xlsx', tag=export_tag, callback=xlsx_out_tab,
                            user_data=[compound_tags, compounds])
             dpg.add_button(label='Close', parent=output_tab_tag, callback=close, user_data=output_tab_tag)
             close(sender, app_data, str(f'Advanced Search {windowCount.search_popup_count}'))
@@ -146,6 +146,7 @@ def write_new_xlsx(sender, app_data, user_data):
     compounds = user_data[0]
     naming_info = gc(get_filepath())[0]
     out_filepath = dpg.get_value(user_data[1])
+
     try:
         wb = openpyxl.load_workbook(out_filepath)
         sheet = wb.active
@@ -159,9 +160,25 @@ def write_new_xlsx(sender, app_data, user_data):
                 sheet.cell(new_row + y, z + 1).value = this_data
         wb.save(out_filepath)
 
+    except:
+        workbook = xlsxwriter.Workbook(out_filepath)
+        workbook.add_worksheet()
+        workbook.close()
+
+        wb = openpyxl.load_workbook(out_filepath)
+        sheet = wb.active
+        for x, info in enumerate(naming_info):
+            if sheet.cell(1, x + 1).value != naming_info[x]:
+                sheet.cell(1, x + 1).value = naming_info[x]
+        wb.save(out_filepath)
+        new_row = sheet.max_row + 1
+        for y, compound_info in enumerate(compounds):
+            for z, this_data in enumerate(compound_info):
+                sheet.cell(new_row + y, z + 1).value = this_data
+        wb.save(out_filepath)
 
     finally:
-        pass
+        close_add_to_database(user_data[2])
 
 
 
