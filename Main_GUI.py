@@ -1,12 +1,14 @@
 import dearpygui.dearpygui as dpg
+import openpyxl
+# import xlsxwriter
+
 from GUI_compatible_searches import *
 from Compound_From_XLS import get_compounds as gc
 from openpyxl import load_workbook
 from PubChem_Search import search_pubchem_input as spc
 from hmdb_xml_data_extactor import *
 
-dpg.create_context()
-dpg.create_viewport(title='PMF Chemical Database', width=800, height=600)
+
 
 class windowCount:
     manual_count = 0
@@ -18,6 +20,7 @@ class windowCount:
     output_tab_count = 0
     hmdb_search_count = 0
     hmdb_popup_count = 0
+    xlsx_out_count = 0
 
 class namingCount:
     count = 1
@@ -37,8 +40,20 @@ def search_starter():
     with dpg.tab(label='Outputs', parent='tabs', tag=output_tab_tag):
         search_type = dpg.get_value(f'type_{windowCount.search_count}')
         search_term = dpg.get_value(f'term_{windowCount.search_count}')
-        dpg.add_text(GUI_quick_search(search_type, search_term, get_filepath(), None), parent=output_tab_tag)
-        dpg.add_button(label='Close', parent=output_tab_tag, callback=close, user_data=output_tab_tag)
+        quick_search_str = GUI_quick_search(search_type, search_term, get_filepath(), None, 'str')
+        quick_search_compounds = GUI_quick_search(search_type, search_term, get_filepath(), None, 'cmp')
+        if quick_search_str[0] != 0:
+            compound_tags = []
+            for x, compound_str in enumerate(quick_search_str):
+                compound_tag = str(f'{search_term}_{x}')
+                compound_tags.append(compound_tag)
+                dpg.add_checkbox(label=compound_str, tag=compound_tag, parent=output_tab_tag)
+            more_info_tag = str(f'{output_tab_tag}_more_button')
+            export_tag = str(f'{output_tab_tag}_export_button')
+            dpg.add_button(label='More Information(pending)', tag=more_info_tag)
+            dpg.add_button(label='Export Data to .xlsx(pending)', tag=export_tag, callback=xlsx_out_tab,
+                           user_data=[compound_tags, quick_search_compounds])
+            dpg.add_button(label='Close', parent=output_tab_tag, callback=close, user_data=output_tab_tag)
 
 def advanced_search_starter(sender, app_data, user_data):
     advanced_return_nums = []
@@ -50,9 +65,23 @@ def advanced_search_starter(sender, app_data, user_data):
     with dpg.tab(label='Outputs', tag=output_tab_tag, parent='tabs'):
         search_type = dpg.get_value(f'type_{windowCount.search_count}')
         search_term = dpg.get_value(f'term_{windowCount.search_count}')
-        dpg.add_text(GUI_quick_search(search_type, search_term, get_filepath(), advanced_return_nums), parent=output_tab_tag)
-        dpg.add_button(label='Close', parent=output_tab_tag, callback=close, user_data=output_tab_tag)
-        close(sender, app_data, str(f'Advanced Search {windowCount.search_popup_count}'))
+        quick_search_str = GUI_quick_search(search_type, search_term, get_filepath(), advanced_return_nums, 'str')
+        quick_search_compounds = GUI_quick_search(search_type, search_term, get_filepath(), advanced_return_nums, 'cmp')
+        if quick_search_str[0] != 0:
+            compound_tags = []
+            compounds = []
+            for x, compound_str in enumerate(quick_search_str):
+                compounds.append(quick_search_compounds[x])
+                compound_tag = str(f'{search_term}_{x}')
+                compound_tags.append(compound_tag)
+                dpg.add_checkbox(label=compound_str, tag=compound_tag, parent=output_tab_tag)
+            more_info_tag = str(f'{output_tab_tag}_more_button')
+            export_tag = str(f'{output_tab_tag}_export_button')
+            dpg.add_button(label='More Information(pending)', tag=more_info_tag)
+            dpg.add_button(label='Export Data to .xlsx(pending)', tag=export_tag, callback=xlsx_out_tab,
+                           user_data=[compound_tags, compounds])
+            dpg.add_button(label='Close', parent=output_tab_tag, callback=close, user_data=output_tab_tag)
+            close(sender, app_data, str(f'Advanced Search {windowCount.search_popup_count}'))
 
 class searchWindow():
 
@@ -89,7 +118,51 @@ class searchWindowPopup():
                     name_tag = str(f'{x}. {names[x]} {windowCount.search_popup_count}')
                     name_tags.append(name_tag)
                     dpg.add_checkbox(label=name, tag=name_tag, parent=window_name)
-            dpg.add_button(label='Advanced Search!', callback=advanced_search_starter, user_data=name_tags, parent=window_name)
+            dpg.add_button(label='Advanced Search!', callback=advanced_search_starter, user_data=name_tags,
+                           parent=window_name)
+
+def xlsx_out_tab(sender, app_data, user_data):
+    windowCount.xlsx_out_count += 1
+    window_name = str(f'Write compound to .xlsx {windowCount.xlsx_out_count}')
+    compound_tags = user_data[0]
+    compounds = user_data[1]
+    compounds_to_export = []
+    with dpg.window(tag=window_name, width=600, height=300):
+        for x, compound_tag in enumerate(compound_tags):
+            if dpg.get_value(compound_tag) == True:
+                compounds_to_export.append(compounds[x])
+        if len(compounds_to_export) != 0:
+            dpg.add_text('Enter a filepath for your excel file.\nIf you don\'t have a file created, enter the filepath'
+                         ' where you want to store your new excel file', parent=window_name)
+            filepath_input_tag = str(f'filepath_input_{windowCount.xlsx_out_count}')
+            dpg.add_input_text(tag=filepath_input_tag)
+            dpg.add_button(label='Write data to the excel file!', parent=window_name, callback=write_new_xlsx,
+                           user_data=[compounds_to_export, filepath_input_tag, window_name])
+        else:
+            dpg.add_text('No Compounds Selected', parent=window_name)
+            dpg.add_button(label='Close', parent=window_name, callback=close, user_data=window_name)
+
+def write_new_xlsx(sender, app_data, user_data):
+    compounds = user_data[0]
+    naming_info = gc(get_filepath())[0]
+    out_filepath = dpg.get_value(user_data[1])
+    try:
+        wb = openpyxl.load_workbook(out_filepath)
+        sheet = wb.active
+        for x, info in enumerate(naming_info):
+            if sheet.cell(1, x + 1).value != naming_info[x]:
+                sheet.cell(1, x + 1).value = naming_info[x]
+        wb.save(out_filepath)
+        new_row = sheet.max_row + 1
+        for y, compound_info in enumerate(compounds):
+            for z, this_data in enumerate(compound_info):
+                sheet.cell(new_row + y, z + 1).value = this_data
+        wb.save(out_filepath)
+
+
+    finally:
+        pass
+
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -196,7 +269,8 @@ def pubchem_popup(compounds, search_term):
         compound_strings = []
         compound_tags = []
         for compound in compounds:
-            compound_strings.append(str(f'{"Name":20}{compound.iupac_name}\n{"Formula":20}{compound.molecular_formula}\n{"InChiKey":20}{compound.inchikey}'))
+            compound_strings.append(str(f'{"Name":20}{compound.iupac_name}\n{"Formula":20}{compound.molecular_formula}'
+                                        f'\n{"InChiKey":20}{compound.inchikey}'))
         for compound_string in compound_strings:
             compound_tag = str(f'{windowCount.pubchem_popup} {compound_string}')
             compound_tags.append(compound_tag)
@@ -307,7 +381,8 @@ class hmdbAdd:
                 search_tag = str(f'Search {tab_tag}')
                 dpg.add_input_text(tag=search_tag, parent=tab_tag)
                 dpg.add_button(label='Search!', parent=tab_tag, callback=hmdb_search, user_data=search_tag)
-                dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 40, 50), parent=tab_tag, callback=close, user_data=tab_tag)
+                dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 40, 50), parent=tab_tag, callback=close,
+                               user_data=tab_tag)
 
 def hmdb_search(sender, app_data, user_data):
     compounds = find_xml(dpg.get_value(user_data)) # list of lists
@@ -319,7 +394,8 @@ def hmdb_search(sender, app_data, user_data):
             if compound != 'Invalid Accession':
                 top_text_add_compound = str(f'top text add compound {windowCount.hmdb_popup_count}')
                 dpg.add_text('Select the compound you want to add!', parent=tab_tag, tag=top_text_add_compound)
-                compound_str = (f'{"Name":40}{compound.name}\n{"Formula":40}{compound.formula}\n{"InChiKey":40}{compound.inchikey}')
+                compound_str = (f'{"Name":40}{compound.name}\n{"Formula":40}{compound.formula}\n{"InChiKey":40}'
+                                f'{compound.inchikey}')
                 compound_tag = str(f'{windowCount.pubchem_popup} {compound_str}')
                 compound_tags.append(compound_tag)
                 dpg.add_checkbox(tag=compound_tag, label=compound_str, parent=tab_tag)
@@ -474,26 +550,30 @@ def close_add_to_database(tab_tag):
 # ---------------------------------------------------------------------------------------------------------------------
 # Home Screen
 
-with dpg.window(label='PMF Chemical Database', width=600, height=300, tag='Primary Window'):
-    with dpg.menu_bar():
-        dpg.add_menu_item(tag='search', label='Search Database', callback=searchWindow.search_window)
-        with dpg.menu(label='Edit Database'):
-            with dpg.menu(label='Add to Database'):
-                dpg.add_menu_item(label='Add Manually', callback=manualTabAdd.manual_window)
-                dpg.add_menu_item(label='Add from PubChem', callback=pubChemAdd.pubchem_window)
-                dpg.add_menu_item(label='Add from HMDB', callback=hmdbAdd.hmdb_window)
-        with dpg.tab_bar(tag='tabs', parent='Primary Window'):
-            with dpg.tab(label='Home', tag='Home'):
-                dpg.add_text('Welcome to the Database!', parent='Home')
-                dpg.add_text('Enter Filepath to the Database Bellow', parent='Home')
-                dpg.add_input_text(tag='file', parent='Home')
+def main():
+    dpg.create_context()
+    dpg.create_viewport(title='PMF Chemical Database', width=800, height=600)
+    with dpg.window(label='PMF Chemical Database', width=600, height=300, tag='Primary Window'):
+        with dpg.menu_bar():
+            dpg.add_menu_item(tag='search', label='Search Database', callback=searchWindow.search_window)
+            with dpg.menu(label='Edit Database'):
+                with dpg.menu(label='Add to Database'):
+                    dpg.add_menu_item(label='Add Manually', callback=manualTabAdd.manual_window)
+                    dpg.add_menu_item(label='Add from PubChem', callback=pubChemAdd.pubchem_window)
+                    dpg.add_menu_item(label='Add from HMDB', callback=hmdbAdd.hmdb_window)
+            with dpg.tab_bar(tag='tabs', parent='Primary Window'):
+                with dpg.tab(label='Home', tag='Home'):
+                    dpg.add_text('Welcome to the Database!', parent='Home')
+                    dpg.add_text('Enter Filepath to the Database Bellow', parent='Home')
+                    dpg.add_input_text(tag='file', parent='Home')
+    dpg.setup_dearpygui()
+    dpg.show_viewport()
+    dpg.set_primary_window("Primary Window", True)
+    dpg.start_dearpygui()
+    dpg.destroy_context()
 
 
-
-dpg.setup_dearpygui()
-dpg.show_viewport()
-dpg.set_primary_window("Primary Window", True)
-dpg.start_dearpygui()
-dpg.destroy_context()
+if __name__ == '__main__':
+    main()
 
 
