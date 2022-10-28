@@ -193,10 +193,13 @@ def beautiful_output_tab(sender, app_data, user_data):
         tab_tag = str(f'{windowCount.beautiful_output_count} {this_compound[1]}')
         dpg.add_tab(label=tab_tag, tag=tab_tag, parent='tabs')
         compound_info_str = ''
+        checkbox_tag = str(f'{tab_tag}_check')
         for y, name in enumerate(naming_info):
             if this_compound[y] is not None and naming_info is not None:
                 compound_info_str += str(f'{str(naming_info[y]):40} {str(this_compound[y])}\n')
-        dpg.add_text(compound_info_str, parent=tab_tag)
+        dpg.add_checkbox(label=compound_info_str, tag=checkbox_tag, parent=tab_tag)
+        dpg.add_button(label='Write data to the excel file!', parent=tab_tag, callback=xlsx_out_tab,
+                       user_data=[[checkbox_tag], [this_compound]])
         dpg.add_button(label='Close', parent=tab_tag, callback=close, user_data=tab_tag)
 
 
