@@ -8,8 +8,6 @@ from openpyxl import load_workbook
 from PubChem_Search import search_pubchem_input as spc
 from hmdb_xml_data_extactor import *
 
-
-
 class windowCount:
     manual_count = 0
     search_count = 0
@@ -21,6 +19,7 @@ class windowCount:
     hmdb_search_count = 0
     hmdb_popup_count = 0
     xlsx_out_count = 0
+    beautiful_output_count = 0
 
 class namingCount:
     count = 1
@@ -77,7 +76,8 @@ def advanced_search_starter(sender, app_data, user_data):
                 dpg.add_checkbox(label=compound_str, tag=compound_tag, parent=output_tab_tag)
             more_info_tag = str(f'{output_tab_tag}_more_button')
             export_tag = str(f'{output_tab_tag}_export_button')
-            dpg.add_button(label='More Information(pending)', tag=more_info_tag)
+            dpg.add_button(label='More Information', tag=more_info_tag, callback=beautiful_output_tab,
+                           user_data=[compound_tags, compounds])
             dpg.add_button(label='Export Data to .xlsx', tag=export_tag, callback=xlsx_out_tab,
                            user_data=[compound_tags, compounds])
             dpg.add_button(label='Close', parent=output_tab_tag, callback=close, user_data=output_tab_tag)
@@ -180,6 +180,24 @@ def write_new_xlsx(sender, app_data, user_data):
     finally:
         close_add_to_database(user_data[2])
 
+def beautiful_output_tab(sender, app_data, user_data):
+    compound_tags = user_data[0]
+    compounds = user_data[1]
+    compounds_to_display = []
+    windowCount.beautiful_output_count += 1
+    naming_info = gc(get_filepath())[0]
+    for x, compound_tag in enumerate(compound_tags):
+        if dpg.get_value(compound_tag) == True:
+            compounds_to_display.append(compounds[x])
+    for this_compound in compounds_to_display:
+        tab_tag = str(f'{windowCount.beautiful_output_count} {this_compound[1]}')
+        dpg.add_tab(label=tab_tag, tag=tab_tag, parent='tabs')
+        compound_info_str = ''
+        for y, name in enumerate(naming_info):
+            if this_compound[y] is not None and naming_info is not None:
+                compound_info_str += str(f'{str(naming_info[y]):40} {str(this_compound[y])}\n')
+        dpg.add_text(compound_info_str, parent=tab_tag)
+        dpg.add_button(label='Close', parent=tab_tag, callback=close, user_data=tab_tag)
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -463,7 +481,7 @@ def hmdb_popup_add_info(sender, app_data, user_data):
     button_tag = str(f'{windowCount.pubchem_popup}_add_pubchem_chemical')
     dpg.add_button(label='Add Chemical to Database!', tag=button_tag,
                    parent=tab_tag, callback=add_with_hmdb,
-                   user_data=[chosen_compound, name_tags, label_tags, button_tag, tab_tag, labels])
+                   user_data=[chosen_compound, name_tags, tab_tag, labels])
 
 
 
@@ -471,10 +489,8 @@ def hmdb_popup_add_info(sender, app_data, user_data):
 def add_with_hmdb(sender, app_data, user_data):
     chosen_compound = user_data[0]
     name_tags = user_data[1]
-    label_tags = user_data[2]
-    button_tag = user_data[3]
-    tab_tag = user_data[4]
-    labels = user_data[5]
+    tab_tag = user_data[2]
+    labels = user_data[3]
 
     wb = load_workbook(get_filepath())
     sheet = wb.active
