@@ -20,15 +20,13 @@ class windowCount:
     hmdb_popup_count = 0
     xlsx_out_count = 0
     beautiful_output_count = 0
+    file_window_count = 0
 
 class namingCount:
     count = 1
 
 class NewChemical:
     info = []
-
-def get_filepath():
-    return dpg.get_value('file')
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -132,12 +130,19 @@ def xlsx_out_tab(sender, app_data, user_data):
             if dpg.get_value(compound_tag) == True:
                 compounds_to_export.append(compounds[x])
         if len(compounds_to_export) != 0:
-            dpg.add_text('Enter a filepath for your excel file.\nIf you don\'t have a file created, enter the filepath'
-                         ' where you want to store your new excel file', parent=window_name)
+            path_info = get_filepath(False)
+            path_tags = {}
+            dpg.add_text('Select one of your existing files or create a new one.')
+            for path_name, path in path_info.items():
+                path_tag = str(f'{path_name}_{windowCount.xlsx_out_count}')
+                path_tags[path_tag] = path
+                dpg.add_checkbox(label=path_name, tag=path_tag)
             filepath_input_tag = str(f'filepath_input_{windowCount.xlsx_out_count}')
+            dpg.add_text('New filepath and name:')
             dpg.add_input_text(tag=filepath_input_tag)
+            #### working to make this callback so that we can have existing filepaths/databases selected
             dpg.add_button(label='Write data to the excel file!', parent=window_name, callback=write_new_xlsx,
-                           user_data=[compounds_to_export, filepath_input_tag, window_name])
+                           user_data=[compounds_to_export, filepath_input_tag, path_tags, window_name])
         else:
             dpg.add_text('No Compounds Selected', parent=window_name)
             dpg.add_button(label='Close', parent=window_name, callback=close, user_data=window_name)
@@ -146,6 +151,11 @@ def write_new_xlsx(sender, app_data, user_data):
     compounds = user_data[0]
     naming_info = gc(get_filepath())[0]
     out_filepath = dpg.get_value(user_data[1])
+    existing_out_filepaths = user_data[2]
+
+    for path_tag, path in existing_out_filepaths.items():
+        if dpg.get_value(path_tag) == True:
+            out_filepath = path
 
     try:
         wb = openpyxl.load_workbook(out_filepath)
@@ -178,7 +188,7 @@ def write_new_xlsx(sender, app_data, user_data):
         wb.save(out_filepath)
 
     finally:
-        close_add_to_database(user_data[2])
+        close_popup(user_data[3], 'Chemicals have been added to your database!')
 
 def beautiful_output_tab(sender, app_data, user_data):
     compound_tags = user_data[0]
@@ -266,7 +276,7 @@ def add_to_database(sender, app_data, user_data):
         sheet.cell(max_row + 1, x + 2).value = dpg.get_value(name_tags[x])
     wb.save(get_filepath())
 
-    close_add_to_database(user_data[1])
+    close_popup(user_data[1], 'Chemical has been added manually!')
 
 # ---------------------------------------------------------------------------------------------------------------------
 # All classes and fxns of PubChem addition
@@ -405,7 +415,7 @@ def add_with_pubchem(sender, app_data, user_data):
 
     wb.save(get_filepath())
 
-    close_add_to_database(tab_tag)
+    close_popup(tab_tag, 'Chemical has been added from PubChem!')
 
 class hmdbAdd:
     def hmdb_window(self):
@@ -557,12 +567,62 @@ def add_with_hmdb(sender, app_data, user_data):
 
     wb.save(get_filepath())
 
-    close_add_to_database(tab_tag)
+    close_popup(tab_tag, 'Chemical has been added from HMDB!')
 
+class fileWindow:
+    def file_window(self):
+        windowCount.file_window_count += 1
+        tab_tag = str(f'file_window_{windowCount.file_window_count}')
+        with dpg.tab(label='File', tag=tab_tag, parent='tabs'):
+            tags = {}
+            dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 40, 50), parent=tab_tag, callback=close,
+                           user_data=tab_tag)
+            dpg.add_text('Edit Main Database Filepath', parent=tab_tag)
+            main_tag = str(f'MAIN_DATABASE_{windowCount.file_window_count}')
+            dpg.add_input_text(default_value=get_filepath(), tag=main_tag, parent=tab_tag)
+            tags['MAIN_DATABASE'] = main_tag
+            dpg.add_text('\n', parent=tab_tag)
+            personal_paths_info = get_filepath(main_path=False)
+            for path_name, path in personal_paths_info.items():
+                if path_name != 'MAIN_DATABASE':
+                    path_tag = str(f'{path_name}_{windowCount.file_window_count}')
+                    tags[path_name] = path_tag
+                    dpg.add_text(path_name, parent=tab_tag)
+                    dpg.add_input_text(tag=path_tag, default_value=path, parent=tab_tag)
+            dpg.add_button(label='Update Filepaths', parent=tab_tag, callback=edit_filepaths, user_data=[tags, tab_tag])
+            dpg.add_button(label='Add Personal Path', parent=tab_tag, callback=add_personal_path())
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Miscellaneous Features
+
+def get_filepath(main_path=True):
+    with open('filepath.txt', 'r') as a:
+        b = a.readlines()
+        my_paths = {}
+        for x in range(len(b)):
+            if b[x] != '\n':
+                path_name = (((b[x].split('='))[0]).replace(' ', '').replace('\n', ''))
+                path = (((b[x].split('='))[1]).replace(' ', '').replace('\n', ''))
+                my_paths[path_name] = path
+        if main_path == True:
+            return my_paths.get('MAIN_DATABASE')
+        else:
+            return my_paths
+
+
+def edit_filepaths(sender, app_data, user_data):
+    path_info = user_data[0]
+    tab_tag = user_data[1]
+    with open('filepath.txt', 'w') as a:
+        out_str = ''
+        for path_name, path in path_info.items():
+            out_str += str(f'{path_name}={dpg.get_value(path)}\n')
+        a.write(out_str)
+    close_popup(tab_tag, 'Filepaths have been updated!')
+
+def add_personal_path():
+    pass
 
 def close(sender, app_data, user_data):
     dpg.delete_item(user_data)
@@ -575,9 +635,9 @@ def invalid_filepath_popup():
         dpg.add_button(label='Close', tag='Button Invalid Filepath or No Filepath {windowCount.invalid_filepath_popup_count}',
                        callback=close, user_data=f'Invalid Filepath or No Filepath {windowCount.invalid_filepath_popup_count}')
 
-def close_add_to_database(tab_tag):
+def close_popup(tab_tag, message):
     dpg.delete_item(tab_tag, children_only=True)
-    dpg.add_text('Chemical has been added to the database!', parent=tab_tag)
+    dpg.add_text(message, parent=tab_tag)
     dpg.add_button(label='Close', parent=tab_tag, callback=close, user_data=tab_tag)
 
 
@@ -591,6 +651,7 @@ def main():
     dpg.create_viewport(title='PMF Chemical Database', width=800, height=600)
     with dpg.window(label='PMF Chemical Database', width=600, height=300, tag='Primary Window'):
         with dpg.menu_bar():
+            dpg.add_menu_item(label='File', tag='File', callback=fileWindow.file_window)
             dpg.add_menu_item(tag='search', label='Search Database', callback=searchWindow.search_window)
             with dpg.menu(label='Edit Database'):
                 with dpg.menu(label='Add to Database'):
@@ -600,8 +661,6 @@ def main():
             with dpg.tab_bar(tag='tabs', parent='Primary Window'):
                 with dpg.tab(label='Home', tag='Home'):
                     dpg.add_text('Welcome to the Database!', parent='Home')
-                    dpg.add_text('Enter Filepath to the Database Bellow', parent='Home')
-                    dpg.add_input_text(tag='file', parent='Home')
     dpg.setup_dearpygui()
     dpg.show_viewport()
     dpg.set_primary_window("Primary Window", True)
