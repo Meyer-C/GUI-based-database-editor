@@ -6,15 +6,17 @@ The completed .exe file is only available for windows devices at the moment, but
 
 # App Setup
 
-1. The app can be downloaded the [Database_V2.exe](https://drive.google.com/file/d/1VPwz_KzmrtNJU0M0jbiBVRoHrNyziMJg/view?usp=sharing) google drive link! When the link opens, select download. If the virus screen pops up, select download anyways.
+1. The app can be downloaded the [Database_V2](https://drive.google.com/drive/folders/1QE8qKF911_otxtfWQJ-tup8bOx1GY_7F?usp=sharing) google drive link! When the link opens, select download. If the virus screen pops up, select download anyways.
 
-2. Once the app is downloaded on your system, double click the icon wherever it is stored (should be in downloads to start). Windows will now ask you to trust the app before running because it is not a recognized windows app. Click on "more info", then run anyways.
+2. Once the app is downloaded, you will need to set up the "filepath.txt" folder as shown in the drive. Both the app and the filepath.txt will need to be in the same folder for the app to work. You can use the filepath.txt on the drive to download as a template. It can be edited within the app, so don't bother changing it for now, but make sure it is downloaded and is in the same folder as the Database_V2.exe.
 
-3. The app will take a moment to set up, but once it boots navigate to the "File" tab.
+3. Once the app is downloaded on your system, double click the icon wherever it is stored (should be in downloads to start). Windows will now ask you to trust the app before running because it is not a recognized windows app. Click on "more info", then run anyways.
 
-4. To make all features of the database work, enter the absolute path to the excel database you will be using (T:\path\info\example.xlsx) and then click update filepaths. If you want to add a personal database to have a subset of data for faster searching, enter a personal database path in the "My_Database_1" field (C:\path\info\example.xlsx), then click update (see add personal path for more info bellow).
+4. The app will take a moment to set up, but once it boots navigate to the "File" tab.
 
-5. You're all set up and ready to start using the database!
+5. To make all features of the database work, enter the absolute path to the excel database you will be using (T:\path\info\example.xlsx) and then click update filepaths. If you want to add a personal database to have a subset of data for faster searching, enter a personal database path in the "My_Database_1" field (C:\path\info\example.xlsx), then click update (see add personal path for more info bellow).
+
+6. You're all set up and ready to start using the database!
 
 
 
