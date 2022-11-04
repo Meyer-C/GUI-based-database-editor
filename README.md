@@ -46,11 +46,13 @@ This tab allows you to search your Main Database (specified on "File" page). Mak
 > If using Search, it will return all information on the chemical or chemicals in the output tab.
 > If you click advanced search however, it will create a popup to allow you to select the data that you would like to see in the outputs tab (ex. name, mass, InChiKey). You can select as many of these boxes as you would like! Click the "Advanced Search" button at the bottom of the popup to search!
 4. View the outputs in the new "Outputs" tab!
-> If you want to see more information on any of the chemicals, you can select their checkboxes and then click the "" button. This will create a new tab for each of the selected chemicals and will have all of their information displayed!
+> If you want to see more information on any of the chemicals, you can select their checkboxes and then click the "More Information" button. This will create a new tab for each of the selected chemicals and will have all of their information displayed! From each of these new tabs you can also chose to export the chemical data to your personal excel datasheet using the "Export Data to .xlsx" button on the bottom of the tab!
 >> You can also export the chemical information to your personal excel database!
->> 1. First, click the "" button at the bottom of the screen.
+>> 1. First, click the "Export Data to .xlsx" button at the bottom of the screen.
 >> 2. You will be prompted to select a database to add to. You can choose one of the databases that you created on the file tab, or create a new excel database! If you're creating a new database, enter what you would like the new database to be named as well as the filepath (C:\path\info\example.xlsx), then click ""
 >> 3. Your chemicals will be added to your personal database!
+
+
 
 
 
