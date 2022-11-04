@@ -1,6 +1,8 @@
 import dearpygui.dearpygui as dpg
 import openpyxl
 import xlsxwriter
+import sys
+import os
 
 from GUI_compatible_searches import *
 from Compound_From_XLS import get_compounds as gc
@@ -623,7 +625,7 @@ class fileWindow:
 # Miscellaneous Features
 
 def get_filepath(main_path=True):
-    with open('filepath.txt', 'r') as a:
+    with open(resource_path(), 'r') as a:
         b = a.readlines()
         my_paths = {}
         for x in range(len(b)):
@@ -635,6 +637,15 @@ def get_filepath(main_path=True):
             return my_paths.get('MAIN_DATABASE')
         else:
             return my_paths
+
+def resource_path():
+    relative_path = 'filepath.txt'
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 
 
 def edit_filepaths(sender, app_data, user_data):
