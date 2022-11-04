@@ -1,4 +1,4 @@
-# PMF_database_editor
+# Chemical Database Editor
 
 # Search an excel formatted database, add chemicals, edit the database, create a personal database to export data, and save for later
 This is all accessible through the main GUI interface which will be updated along the way to add new features to make chemical searches more intuitive.
@@ -36,9 +36,16 @@ The file tab is used to store your database information so you don't have to add
 
 ## Search Database
 
-This tab allows you to search your Main Database (specified on "File" page). 
+This tab allows you to search your Main Database (specified on "File" page). Make sure that this database path is specified or it will not work!
 
-1. First, specify the search type you want to do! 
+1. First, specify the search type you want to do! You can search by the chemical name, mass (which can be either a specific mass or mass range ex. 400-500), or by InChiKey! Make sure to select the right search type you'll be using or you might get some *very* funky results.
+2. Next, enter your search term! You can enter part of a name and it should be able to get your result, but you may need to filter it afterwards.
+3. Click either "Search" or "Advanced Search Options"!
+> If using Search, it will return all information on the chemical or chemicals in the output tab.
+> If you click advanced search however, it will create a popup to allow you to select the data that you would like to see in the outputs tab (ex. name, mass, InChiKey). You can select as many of these boxes as you would like! Click the "Advanced Search" button at the bottom of the popup to search!
+4. View the outputs in the new "Outputs" tab!
+> If you want to see more information on any of the chemicals, you can select their checkboxes and then click the "" button. This will create a new tab for each of the selected chemicals and will have all of their information displayed!
+> You can also chose to export the chemical data to one of your personal databases. 
 
 
 
