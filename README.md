@@ -5,7 +5,8 @@ This is all accessible through the main GUI interface which will be updated alon
 
 # App Setup
 
-1. The app can be downloaded directly from here this repository! 
+1. The app can be downloaded from the google drive link bellow!
+[Database_V2.exe](https://drive.google.com/file/d/1YEGfNXTLjPN7JRBxe4nfW_8CT4uIqrRh/view?usp=sharing)
 
 # Main GUI
   - class windowCount
