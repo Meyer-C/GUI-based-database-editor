@@ -1,7 +1,11 @@
 # PMF_database_editor
 
-# Search an excel formatted database, add chemicals, edit the database, and save for later
+# Search an excel formatted database, add chemicals, edit the database, create a personal database to export data, and save for later
 This is all accessible through the main GUI interface which will be updated along the way to add new features to make chemical searches more intuitive
+
+# App Setup
+
+1. The app can be downloaded directly from here this repository! 
 
 # Main GUI
   - class windowCount
