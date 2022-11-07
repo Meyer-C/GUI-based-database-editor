@@ -8,7 +8,8 @@ The completed .exe file is only available for windows devices at the moment, but
 
 # App Setup
 
-1. The app can be downloaded the [Database_V2](https://drive.google.com/drive/folders/1QE8qKF911_otxtfWQJ-tup8bOx1GY_7F?usp=sharing) google drive link! When the link opens, select download. If the virus screen pops up, select download anyways. I recomend opening the google drive link in a chrome browser to make installation a little bit easier. Browsers like edge work as well but require a few extra steps to ensure that the file is safe to download and install[^1].
+1. The app can be downloaded the [Database_V2](https://drive.google.com/drive/folders/1QE8qKF911_otxtfWQJ-tup8bOx1GY_7F?usp=sharing) google drive link! When the link opens, select download. If the virus screen pops up, select download anyways. I recomend opening the google drive link in a chrome browser to make installation a little bit easier. Browsers like edge work as well but require a few extra steps to ensure that the file is safe to download and install.
+> If downloading with edge, after you have clicked the download button in the google drive you will need to click the download button in the upper right hand of the screen (it should have a little warning icon on it). Hover over the Database_V2.exe file in this dropdown and then click the "..." icon. Click keep in this popup. It will ask you to trust the app. Click "Show more" and then "keep anyway". This should then download the app as a .exe, ready to run! 
 
 2. Once the app is downloaded, you will need to set up the "filepath.txt" folder as shown in the drive. Both the app and the filepath.txt will need to be in the same folder for the app to work. You can use the filepath.txt on the drive to download as a template. It can be edited within the app, so don't bother changing it for now, but make sure it is downloaded and is in the same folder as the Database_V2.exe.
 
@@ -19,8 +20,6 @@ The completed .exe file is only available for windows devices at the moment, but
 5. To make all features of the database work, enter the absolute path to the excel database you will be using (T:\path\info\example.xlsx) and then click update filepaths. If you want to add a personal database to have a subset of data for faster searching, enter a personal database path in the "My_Database_1" field (C:\path\info\example.xlsx), then click update (see add personal path for more info bellow).
 
 6. You're all set up and ready to start using the database!
-
-[^1]: If downloading with edge, after you have clicked the download button in the google drive you will need to click the download button in the upper right hand of the screen (it should have a little warning icon on it). Hover over the Database_V2.exe file in this dropdown and then click the "..." icon. Click keep in this popup. It will ask you to trust the app. Click "Show more" and then "keep anyway". This should then download the app as a .exe, ready to run! 
 
 ---
 
