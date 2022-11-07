@@ -8,8 +8,6 @@ The completed .exe file is only available for windows devices at the moment, but
 
 1. The app can be downloaded the [Database_V2](https://drive.google.com/drive/folders/1QE8qKF911_otxtfWQJ-tup8bOx1GY_7F?usp=sharing) google drive link! When the link opens, select download. If the virus screen pops up, select download anyways.
 
-![Google Drive screen](https://drive.google.com/file/d/14tMiwBPF210_RXpQzv2x9_A5w9RfSuPR/view?usp=sharing)
-
 2. Once the app is downloaded, you will need to set up the "filepath.txt" folder as shown in the drive. Both the app and the filepath.txt will need to be in the same folder for the app to work. You can use the filepath.txt on the drive to download as a template. It can be edited within the app, so don't bother changing it for now, but make sure it is downloaded and is in the same folder as the Database_V2.exe.
 
 3. Once the app is downloaded on your system, double click the icon wherever it is stored (should be in downloads to start). Windows will now ask you to trust the app before running because it is not a recognized windows app. Click on "more info", then run anyways.
@@ -54,9 +52,24 @@ This tab allows you to search your Main Database (specified on "File" page). Mak
 >> 2. You will be prompted to select a database to add to. You can choose one of the databases that you created on the file tab, or create a new excel database! If you're creating a new database, enter what you would like the new database to be named as well as the filepath (C:\path\info\example.xlsx), then click ""
 >> 3. Your chemicals will be added to your personal database!
 
+## Edit Database
 
+This tab allows you to add chemicals from your main database using a few different tools. You can add chemicals through 3 different methods: from PubChem, from HMDB, and you can also manually add chemicals. All of these will require you to manually enter data about how the chemical is stored at the lab. Beyond that, much of the data beyond that can be automatically filled in with PubChem or HMDB.
 
-test
+### Manual Chemical Add
+
+> This is the most basic way to add chemicals to the main database, but it requires the most user input. When you click on the Manual Chemical Add button from the Edit Database dropdown menu, a new manual chemical add tab will be pulled up. Enter all of the data that you need for the chemical in the labeled fields. Once the fields are all filled, click "Add Chemical!" a the bottom of the screen! If the chemical has been successfully added, the tab will state that the chemcial has been added successfully!
+
+### PubChem Add
+
+1. First, navigate to the "PubChem Add" option in the "Edit Database" dropdown menu.
+2. Once the Pubchem Add tab pops up, you will need to select the search type you would like to use. You can search PubChem by Name, CID, Smiles, InChiKey, InChi, or Chemical Formula. Select one of these buttons.
+3. Enter a search term in the text box bellow. Make sure the search term you are using works with the search type you will be using (make sure to not search by name and then type out a chemical formula)
+4. Click the search button! It may take a moment to retrieve the chemicals from PubChem so be patient.
+5. Once the chemical or chemicals are found, a search popup will apear with the chemical information! This tab will include some basic chemical information including Name, Chemical Formula, and InChiKey.
+6. If you want to add a chemical to the database, select one of the chemicals, and then click the "Add to database, continue to next step" button. Becasue you will need to add more storage information about the chemical, only select one chemical at a time.
+7. Enter the storage information for the chemical at the lab and then click the "Add to Database" button.
+8. If the chemical has been added successfully, a popup will apear saying that the chemical has been added to the database!
 
 
 
