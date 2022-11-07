@@ -1,8 +1,8 @@
 # Chemical Database Editor
 
-** Search an excel formatted database, add chemicals, edit the database, create a personal database to export data, and save for later
+**Search an excel formatted database, add chemicals, edit the database, create a personal database to export data, and save for later
 This is all accessible through the main GUI interface which will be updated along the way to add new features to make chemical searches more intuitive.
-The completed .exe file is only available for windows devices at the moment, but an updated Mac file will be released soon. **
+The completed .exe file is only available for windows devices at the moment, but an updated Mac file will be released soon.**
 
 # App Setup
 
