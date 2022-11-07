@@ -4,6 +4,8 @@
 This is all accessible through the main GUI interface which will be updated along the way to add new features to make chemical searches more intuitive.
 The completed .exe file is only available for windows devices at the moment, but an updated Mac file will be released soon.**
 
+---
+
 # App Setup
 
 1. The app can be downloaded the [Database_V2](https://drive.google.com/drive/folders/1QE8qKF911_otxtfWQJ-tup8bOx1GY_7F?usp=sharing) google drive link! When the link opens, select download. If the virus screen pops up, select download anyways. I recomend opening the google drive link in a chrome browser to make installation a little bit easier. Browsers like edge work as well but require a few extra steps to ensure that the file is safe to download and install[^1].
