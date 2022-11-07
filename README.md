@@ -22,6 +22,8 @@ The completed .exe file is only available for windows devices at the moment, but
 
 [^1]: If downloading with edge, after you have clicked the download button in the google drive you will need to click the download button in the upper right hand of the screen (it should have a little warning icon on it). Hover over the Database_V2.exe file in this dropdown and then click the "..." icon. Click keep in this popup. It will ask you to trust the app. Click "Show more" and then "keep anyway". This should then download the app as a .exe, ready to run! 
 
+---
+
 # Usage
 
 ## File
