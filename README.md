@@ -58,7 +58,7 @@ This tab allows you to add chemicals from your main database using a few differe
 
 ### Manual Chemical Add
 
-> This is the most basic way to add chemicals to the main database, but it requires the most user input. When you click on the Manual Chemical Add button from the Edit Database dropdown menu, a new manual chemical add tab will be pulled up. Enter all of the data that you need for the chemical in the labeled fields. Once the fields are all filled, click "Add Chemical!" a the bottom of the screen! If the chemical has been successfully added, the tab will state that the chemcial has been added successfully!
+This is the most basic way to add chemicals to the main database, but it requires the most user input. When you click on the Manual Chemical Add button from the Edit Database dropdown menu, a new manual chemical add tab will be pulled up. Enter all of the data that you need for the chemical in the labeled fields. Once the fields are all filled, click "Add Chemical!" a the bottom of the screen! If the chemical has been successfully added, the tab will state that the chemcial has been added successfully!
 
 ### PubChem Add
 
