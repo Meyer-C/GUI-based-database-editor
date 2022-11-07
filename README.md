@@ -18,8 +18,6 @@ The completed .exe file is only available for windows devices at the moment, but
 
 6. You're all set up and ready to start using the database!
 
-
-
 # Usage
 
 ## File
@@ -58,9 +56,11 @@ This tab allows you to add chemicals from your main database using a few differe
 
 ### Manual Chemical Add
 
-This is the most basic way to add chemicals to the main database, but it requires the most user input. When you click on the Manual Chemical Add button from the Edit Database dropdown menu, a new manual chemical add tab will be pulled up. Enter all of the data that you need for the chemical in the labeled fields. Once the fields are all filled, click "Add Chemical!" a the bottom of the screen! If the chemical has been successfully added, the tab will state that the chemcial has been added successfully!
+> This is the most basic way to add chemicals to the main database, but it requires the most user input. When you click on the Manual Chemical Add button from the Edit Database dropdown menu, a new manual chemical add tab will be pulled up. Enter all of the data that you need for the chemical in the labeled fields. Once the fields are all filled, click "Add Chemical!" a the bottom of the screen! If the chemical has been successfully added, the tab will state that the chemcial has been added successfully!
 
 ### PubChem Add
+
+> This tab allows you to add chemicals to your main database directly from PubChem! You can search the PubChem Database using a variety of different search types listed bellow and then select chemicals to add to your database for quicker and easier access! It fills in all of the chemical data from the PubChem Database and then will require you to fill in information on the chemical such as storage information within the lab.
 
 1. First, navigate to the "PubChem Add" option in the "Edit Database" dropdown menu.
 2. Once the Pubchem Add tab pops up, you will need to select the search type you would like to use. You can search PubChem by Name, CID, Smiles, InChiKey, InChi, or Chemical Formula. Select one of these buttons.
@@ -70,6 +70,20 @@ This is the most basic way to add chemicals to the main database, but it require
 6. If you want to add a chemical to the database, select one of the chemicals, and then click the "Add to database, continue to next step" button. Becasue you will need to add more storage information about the chemical, only select one chemical at a time.
 7. Enter the storage information for the chemical at the lab and then click the "Add to Database" button.
 8. If the chemical has been added successfully, a popup will apear saying that the chemical has been added to the database!
+
+### HMDB Add
+
+> This tab allows you to add chemicals directly from the Human Metabolome Data Base! In this early version of this search tool, it can only search by HMDB accession number (HMDB#####), but later versions will include more search options. As with the PubChem Add tool, you will need to add specific information about the chemical such as storage information within the lab.
+
+1. First, navigate to the "HMDB Add" option in the "Edit Database" dropdown menu.
+2. Once the HMDB Add tab pops up, there will be a search bar that will allow you to enter the HMDB accession number. You can search with just the accession number (#######), or with the full accession name/number (HMDB#######).
+3. Click the "Search" button!
+4. Once the chemical has been returned from HMDB, a popup will apear that will list any returned chemicals.
+5. If you want to add a chemical to the database, click the button next to the chemical and then the "Add to database, continue to next step" button. Becasue you will need to add more storage information about the chemical, only select one chemical at a time.
+7. Enter the storage information for the chemical at the lab and then click the "Add to Database" button.
+8. If the chemical has been added successfully, a popup will apear saying that the chemical has been added to the database!
+
+
 
 
 
