@@ -8,6 +8,8 @@ The completed .exe file is only available for windows devices at the moment, but
 
 1. The app can be downloaded the [Database_V2](https://drive.google.com/drive/folders/1QE8qKF911_otxtfWQJ-tup8bOx1GY_7F?usp=sharing) google drive link! When the link opens, select download. If the virus screen pops up, select download anyways.
 
+![Google Drive screen](https://drive.google.com/file/d/14tMiwBPF210_RXpQzv2x9_A5w9RfSuPR/view?usp=sharing)
+
 2. Once the app is downloaded, you will need to set up the "filepath.txt" folder as shown in the drive. Both the app and the filepath.txt will need to be in the same folder for the app to work. You can use the filepath.txt on the drive to download as a template. It can be edited within the app, so don't bother changing it for now, but make sure it is downloaded and is in the same folder as the Database_V2.exe.
 
 3. Once the app is downloaded on your system, double click the icon wherever it is stored (should be in downloads to start). Windows will now ask you to trust the app before running because it is not a recognized windows app. Click on "more info", then run anyways.
