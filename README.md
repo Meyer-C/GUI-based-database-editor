@@ -17,7 +17,7 @@ The completed .exe file is only available for windows devices at the moment, but
 
 4. The app will take a moment to set up, but once it boots navigate to the "File" tab.
 
-5. To make all features of the database work, enter the absolute path to the excel database you will be using (T:\path\info\example.xlsx) and then click update filepaths. If you want to add a personal database to have a subset of data for faster searching, enter a personal database path in the "My_Database_1" field (C:\path\info\example.xlsx), then click update (see add personal path for more info bellow).
+5. To make all features of the database work, enter the absolute path to the excel database you will be using (T:\path\info\example.xlsx) and then click update filepaths. Make sure your excel database is in the same format as the "library_subset.xlsx" in the google drive. If not, you can download and utilize this subset as a template. If you want to add a personal database to have a subset of data for faster searching, enter a personal database path in the "My_Database_1" field (C:\path\info\example.xlsx), then click update (see add personal path for more info bellow).
 
 6. You're all set up and ready to start using the database!
 
