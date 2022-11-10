@@ -25,6 +25,7 @@ class windowCount:
     file_window_count = 0
     personal_path_popup = 0
     close_popup_count = 0
+    help_count = 0
 
 class namingCount:
     count = 1
@@ -620,6 +621,15 @@ class fileWindow:
             dpg.add_button(label='Update Filepaths', parent=tab_tag, callback=edit_filepaths, user_data=[tags, tab_tag])
             dpg.add_button(label='Add Personal Path', parent=tab_tag, callback=add_personal_path_popup)
 
+class helpWindow:
+    def help_window(self):
+        windowCount.help_count += 1
+        tab_tag = str(f'Help {windowCount.help_count}')
+        with dpg.tab(label='Help', tag=tab_tag, parent='tabs'):
+            dpg.add_text(read_help(get_help_path()), parent=tab_tag)
+            dpg.add_button(label='X', pos=(dpg.get_viewport_width() - 40, 50), parent=tab_tag, callback=close,
+                           user_data=tab_tag)
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Miscellaneous Features
@@ -640,18 +650,30 @@ def get_filepath(main_path=True):
 
 def resource_path():
     relative_path = 'filepath.txt'
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
+    basedir = sys.executable
+    last_dir = basedir.rfind("\\")
+    basedir = basedir[:last_dir]
+    return str(f'{basedir}\\{relative_path}')
+
+def get_help_path():
+    relative_path = 'help.txt'
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
+def read_help(help_path):
+    help_str = ''
+    with open(help_path) as a:
+        b = a.readlines()
+        for line in b:
+            new_line = line.replace('\n', '')
+            help_str += str(f'{new_line}\n')
+    return help_str
 
 
 def edit_filepaths(sender, app_data, user_data):
     path_info = user_data[0]
     tab_tag = user_data[1]
-    with open('filepath.txt', 'w') as a:
+    with open(resource_path(), 'w') as a:
         out_str = ''
         for path_name, path in path_info.items():
             out_str += str(f'{path_name}={dpg.get_value(path)}\n')
@@ -691,7 +713,7 @@ def add_path(sender, app_data, user_data):
         pass
 
     try:
-        with open('filepath.txt', 'a') as a:
+        with open(resource_path(), 'a') as a:
             new_path_str = str(f'\n{name}={filepath_to_add}')
             a.write(new_path_str)
             a.close()
@@ -718,7 +740,7 @@ def add_path_no_button(name, filepath):
         pass
 
     try:
-        with open('filepath.txt', 'a') as a:
+        with open(resource_path(), 'a') as a:
             new_path_str = str(f'{name}={filepath_to_add}')
             a.write(new_path_str)
             a.close()
@@ -754,6 +776,14 @@ def close_popup(message, tab_tag=None):
             dpg.add_button(label='Close', parent=close_tag, callback=close, user_data=close_tag)
 
 
+def setup_filepath():
+    try:
+        with open(resource_path(), 'x') as a:
+            a.write('MAIN_DATABASE=Enter_Your_Filepath!')
+    except:
+        pass
+
+
 
 
 
@@ -763,8 +793,10 @@ def close_popup(message, tab_tag=None):
 def main():
     dpg.create_context()
     dpg.create_viewport(title='PMF Chemical Database', width=800, height=600)
+    setup_filepath()
     with dpg.window(label='PMF Chemical Database', width=600, height=300, tag='Primary Window'):
         with dpg.menu_bar():
+            dpg.add_menu_item(label='Help', tag='Help', callback=helpWindow.help_window)
             dpg.add_menu_item(label='File', tag='File', callback=fileWindow.file_window)
             dpg.add_menu_item(tag='search', label='Search Database', callback=searchWindow.search_window)
             with dpg.menu(label='Edit Database'):
